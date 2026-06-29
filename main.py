@@ -3,10 +3,10 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.filters import CommandStart
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-TOKEN = "TOKEN_BOT"
-CHANNEL = "@CHANNEL_USERNAME"
+TOKEN = " 8836838419:AAHMSRIOIZIWaPwf4IKPEQzYE95VSlEe6pk"
+CHANNEL = "@miragemix"
 
-ADMIN_ID = 123456789
+ADMIN_ID = 5681523384
 
 bot = Bot(TOKEN)
 dp = Dispatcher()
