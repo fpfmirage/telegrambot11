@@ -1,136 +1,147 @@
-import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import CommandStart
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+import asyncio
 
-TOKEN = "8836838419:AAHMSRIOIZIWaPwf4IKPEQzYE95VSlEe6pk"
-CHANNEL = "@miragemix"
+# =======================
+# CONFIG
+# =======================
+TOKEN = "8836838419:AAEmSkrIGvfbxwKeOH1IIT51ht6lY9ZiZzg"
 
+CHANNELS = ["@miragemix", "@SnowRemix"]
 ADMIN_ID = 5681523384
 
 bot = Bot(TOKEN)
 dp = Dispatcher()
 
-songs = {}
+songs = {}       # code -> file_id
+downloads = {}   # code -> count
 
 
-def join_button():
+# =======================
+# CHECK MEMBERSHIP
+# =======================
+async def is_member(user_id):
+    for ch in CHANNELS:
+        try:
+            member = await bot.get_chat_member(ch, user_id)
+            if member.status in ["left", "kicked"]:
+                return False
+        except:
+            return False
+    return True
+
+
+# =======================
+# JOIN BUTTON
+# =======================
+def join_button(code):
     kb = InlineKeyboardBuilder()
 
-    kb.button(
-        text="📢 عضویت در کانال",
-        url=f"https://t.me/{CHANNEL.replace('@','')}"
-    )
+    for ch in CHANNELS:
+        kb.button(
+            text=f"📢 عضویت {ch}",
+            url=f"https://t.me/{ch.replace('@','')}"
+        )
 
     kb.button(
-        text="✅ عضویت کردم",
-        callback_data="check_join"
+        text="✅ عضو شدم",
+        callback_data=f"check_{code}"
     )
 
     kb.adjust(1)
-
     return kb.as_markup()
 
 
+# =======================
+# SEND SONG
+# =======================
+async def send_song(message, code):
 
+    if code in songs:
+
+        downloads[code] = downloads.get(code, 0) + 1
+
+        await message.answer_audio(
+            songs[code],
+            caption=f"🎵 دانلود شد | {downloads[code]} بار"
+        )
+
+    else:
+        await message.answer("❌ آهنگ پیدا نشد")
+
+
+# =======================
+# START COMMAND
+# =======================
 @dp.message(CommandStart())
 async def start(message: types.Message):
 
     args = message.text.split()
 
-    if len(args) > 1:
+    if len(args) < 2:
+        await message.answer("❌ لینک اشتباهه")
+        return
 
-        code = args[1]
+    code = args[1]
 
-        try:
-            member = await bot.get_chat_member(
-                CHANNEL,
-                message.from_user.id
-            )
+    if not await is_member(message.from_user.id):
+        await message.answer(
+            "❌ برای دریافت آهنگ باید عضو کانال‌ها بشی",
+            reply_markup=join_button(code)
+        )
+        return
 
-            if member.status in ["left", "kicked"]:
-
-                await message.answer(
-                    "❌ اول عضو کانال شو\nبعد روی دکمه بزن",
-                    reply_markup=join_button()
-                )
-
-                return
-
-        except:
-            pass
+    await send_song(message, code)
 
 
-        if code in songs:
+# =======================
+# CHECK JOIN BUTTON
+# =======================
+@dp.callback_query(lambda c: c.data.startswith("check_"))
+async def check_join(callback: types.CallbackQuery):
 
-            await message.answer_audio(
-                songs[code],
-                caption="🎵 موزیک شما"
-            )
+    code = callback.data.split("_")[1]
 
+    if await is_member(callback.from_user.id):
+
+        await callback.message.delete()
+        await send_song(callback.message, code)
 
     else:
-        await message.answer("سلام 👋")
-
-
-
-
-@dp.callback_query(lambda c: c.data=="check_join")
-async def check(callback: types.CallbackQuery):
-
-    try:
-
-        member = await bot.get_chat_member(
-            CHANNEL,
-            callback.from_user.id
+        await callback.answer(
+            "❌ هنوز عضو همه کانال‌ها نیستی",
+            show_alert=True
         )
 
-        if member.status not in ["left","kicked"]:
 
-            await callback.message.answer(
-                "✅ تایید شد\nحالا لینک آهنگ رو دوباره باز کن"
-            )
-
-        else:
-
-            await callback.answer(
-                "هنوز عضو کانال نشدی ❌",
-                show_alert=True
-            )
-
-    except:
-        pass
-
-
-
-
+# =======================
+# ADMIN UPLOAD SONG
+# =======================
 @dp.message()
 async def upload(message: types.Message):
 
     if message.from_user.id != ADMIN_ID:
         return
 
-
     if message.audio:
-
-        file_id = message.audio.file_id
 
         code = message.audio.file_unique_id
 
-        songs[code] = file_id
-
+        songs[code] = message.audio.file_id
+        downloads[code] = 0
 
         link = f"https://t.me/{(await bot.get_me()).username}?start={code}"
 
-
-        await message.answer(
-            f"✅ لینک آماده شد:\n\n{link}"
-        )
+        await message.answer(f"✅ لینک ساخته شد:\n{link}")
 
 
-
+# =======================
+# MAIN
+# =======================
 async def main():
     await dp.start_polling(bot)
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
