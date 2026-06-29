@@ -3,7 +3,7 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.filters import CommandStart
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-TOKEN = " 8836838419:AAHMSRIOIZIWaPwf4IKPEQzYE95VSlEe6pk"
+TOKEN = "8836838419:AAHMSRIOIZIWaPwf4IKPEQzYE95VSlEe6pk"
 CHANNEL = "@miragemix"
 
 ADMIN_ID = 5681523384
