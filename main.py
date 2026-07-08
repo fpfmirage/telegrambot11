@@ -6,10 +6,10 @@ import asyncio
 # =======================
 # CONFIG
 # =======================
-TOKEN = "8836838419:AAEmSkrIGvfbxwKeOH1IIT51ht6lY9ZiZzg"
+TOKEN = "8942364214:AAFTMsklub3SfOFjf9ErkyfrBV_bJ7u-wtg"
 
-CHANNELS = ["@miragemix", "@SnowRemix"]
-ADMIN_ID = 5681523384
+CHANNELS = ["@miragemix", "@SnowRemix","@daarkkheart]
+ADMIN_ID = [5681523384,7243699586]
 
 bot = Bot(TOKEN)
 dp = Dispatcher()
