@@ -11,7 +11,7 @@ import os
 # =======================
 TOKEN = "8942364214:AAFTMsklub3SfOFjf9ErkyfrBV_bJ7u-wtg"          # ← توکن ربات رو اینجا بذار
 
-ADMIN_ID = [5681523384,7243699586]                       # ← 7243699586آیدی عددی خودت رو اینجا بذار
+ADMIN_ID = 7243699586                # ← 7243699586آیدی عددی خودت رو اینجا بذار
 CHANNELS_FILE = "channels.json"
 
 bot = Bot(TOKEN)
