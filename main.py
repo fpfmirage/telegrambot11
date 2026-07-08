@@ -8,7 +8,7 @@ import asyncio
 # =======================
 TOKEN = "8942364214:AAFTMsklub3SfOFjf9ErkyfrBV_bJ7u-wtg"
 
-CHANNELS = ["@miragemix", "@SnowRemix","@daarkkheart]
+CHANNELS = ["@miragemix", "@SnowRemix","@daarkkheart"]
 ADMIN_ID = [5681523384,7243699586]
 
 bot = Bot(TOKEN)
